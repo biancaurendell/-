@@ -1,0 +1,17 @@
+简单来说，Shadowsocks 功能单一，但是很好上手。V2Ray 功能强大，支持 WebSocket + TLS 等伪装协议，但是配置复杂难上手。
+
+
+
+SSR 和 V2ray 这两种网络协议，都需要将网络流量加密封装成 TCP 数据包（Socket5、VMess）来传输。而且 V2ray 流量识别技术已被申请专利。
+
+缺点：没有特别明显的特征。但是从防火墙的角度来看未知的数据流量就是最明显的特征。使用代理的流量在运营商那里都会显示为 TCP未知流量，如果没有使用 TLS 加密则可以被分析识别流量数据。
+
+https://freeroad.org/172.html
+
+https://p4gefau1t.github.io/trojan-go/官方文档
+
+
+
+目前最稳定的科学上网方式仍然是将流量伪装成https，本节给大家科普了什么是http(s)/tls(ssl)/网站证书/公钥/私钥/非对称加密，以及他们在搭建trojan节点时起到的作用，任何只要带有tls的节点类型都离不开上述的知识(比如vmess+tls+ws)
+
+（VPS）vultr新用户赠送100美金：[https://vps.bulianglin.com/](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbmFkeVBadmxZc3RMTmFOcDlKTVhwZklWV20td3xBQ3Jtc0tsc3VzRFNaM25wc3BzUVhSSFJHRGVYQ0xUa0dtVjgwT09vWE9yYVh3R19WZEluclU4S0QzbE5kT0lqeTFhNElfYUhDNElSR1A2X29nb2hvWE9RdW51VlMyZnQwcExHWVgwM3F5elRhYjNLWlJOSHVOSQ&q=https%3A%2F%2Fvps.bulianglin.com%2F&v=gw2Vl1h89Wo) （FinalShell）管理VPS工具：[http://www.hostbuf.com/t/988.html](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbDIzRk9YQ3dXRnZHZnJHTW02Mm9RNmVlVWNwQXxBQ3Jtc0tuTTVUZnp3Y0xaQzRwOGlya0xQMU1nNGlEQkZkSDRGWEVUYXQzVTc0WHlSVk1hWjBkOU9ITE9ZUXZzaG9HUURTeERZckJRQ1FQQzRWT01wNEEyUUF2Zy1hSy1CVHZDTmtyWmk5bG9uSFFEOHp5ZzFhWQ&q=http%3A%2F%2Fwww.hostbuf.com%2Ft%2F988.html&v=gw2Vl1h89Wo) （trojan-go）[https://github.com/p4gefau1t/trojan-go](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbGNWVk1iWWp1bUZSRlR1VUVJQ0k0R0MxbVV1QXxBQ3Jtc0ttYkxIZTgxdzFhRjVJN1liWXpvbmJPUmE2RnptT0ROaXRqV29obzJUeE0yWFhzZExNVXFLNGk5OHdfbHJ0TmllR2tScE8zOV9LM1dSUENIM1cwX0tNTkxERlZ6SVdESjAxek0zM1luOGFUd1Z6TkdJVQ&q=https%3A%2F%2Fgithub.com%2Fp4gefau1t%2Ftrojan-go&v=gw2Vl1h89Wo) trojan-go官方文档：[https://p4gefau1t.github.io/trojan-go/](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqa2tYb2MyZ3BmZV9pc1h4Z2pjVGh6NGY5T0lpd3xBQ3Jtc0tuLVY1YVQ5VzNNV2xWeWltSEVPRGc4WU9GbE5mM1hqNDBfYlJPTFgzcndxcXlzQmVqdmxMb0hwaHdXaVVjc0xoVGVOY2VUbFZGNVlzSWw0aF9fLUxad212ZUhDcEtnN3lxUjUxTlVqMlM1TFhHTFE2cw&q=https%3A%2F%2Fp4gefau1t.github.io%2Ftrojan-go%2F&v=gw2Vl1h89Wo) trojan配置文件： {    "run_type": "server",    "local_addr": "0.0.0.0",    "local_port": 443,    "remote_addr": "192.83.167.78",    "remote_port": 80,    "password": [        "your_awesome_password"    ],    "ssl": {        "cert": "server.crt",        "key": "server.key"    } } 申请证书：    安装acme：curl [https://get.acme.sh](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbmJpcHpDRlJmWHYxZHdCTXphakw4Q3pmXzMtZ3xBQ3Jtc0ttSmZmQ0JHcXpQNVYwRGNSb3BTc0M0ZUN5SDF6eFhYZ3BibEhKUURsMk9DRXJicDNiQ19jS1JLZlkxYUNvVkNiQjlXeUdoNEE2MzdmelI3YktqRWtaMHJwaktSM2NzTEpaUE9ncm5Nd1JaQUZUaGlEOA&q=https%3A%2F%2Fget.acme.sh%2F&v=gw2Vl1h89Wo) | sh    安装socat：apt install socat    添加软链接：ln -s  /root/.acme.sh/acme.sh /usr/local/bin/acme.sh    注册账号： acme.sh --register-account -m my@example.com    开放80端口：ufw allow 80    申请证书： acme.sh  --issue -d 你的域名  --standalone -k ec-256    安装证书： acme.sh --installcert -d 你的域名 --ecc  --key-file   /root/trojan/server.key   --fullchain-file /root/trojan/server.crt      如果默认CA无法颁发，则可以切换下列CA：    切换 Let’s Encrypt：acme.sh --set-default-ca --server letsencrypt    切换 Buypass：acme.sh --set-default-ca --server buypass    切换 ZeroSSL：acme.sh --set-default-ca --server zerossl  自签证书：    生成私钥：openssl ecparam -genkey -name prime256v1 -out ca.key    生成证书：openssl req -new -x509 -days 36500 -key ca.key -out ca.crt  -subj "/CN=bing.com"  后台运行：youtube不能输入尖括号，请看视频内的指令
